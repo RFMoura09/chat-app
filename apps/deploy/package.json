@@ -1,0 +1,9 @@
+{
+  "name": "deploy",
+  "scripts": {
+    "dev": "docker-compose -f docker-compose.dev.yaml up --build",
+    "up": "docker-compose up --build",
+    "down": "docker-compose down",
+    "logs": "docker-compose logs -f"
+  }
+}

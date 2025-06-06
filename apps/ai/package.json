@@ -1,0 +1,9 @@
+{
+  "name": "ai",
+  "scripts": {
+    "dev": "start-dev.bat",
+    "lint": "flake8 .",
+    "check-types": "mypy .",
+    "test": "pytest"
+  }
+}
