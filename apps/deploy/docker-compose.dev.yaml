@@ -14,10 +14,15 @@ services:
       - pgdata:/var/lib/postgresql/data
   
   migration:
-    image: flyway/flyway
+    image: flyway/flyway:10.15-alpine
     volumes:
       - ./migrations:/flyway/sql
-    command: -url=jdbc:postgresql://postgres:5432/chatdb -user=devuser -password=devpass migrate
+    command: >
+      -connectRetries=10
+      -url=jdbc:postgresql://postgres:5432/chatdb
+      -user=devuser
+      -password=devpass
+      migrate
     depends_on:
       - postgres
 
@@ -28,6 +33,16 @@ services:
       - "27017:27017"
     volumes:
       - mongodata:/data/db
+  
+  signoz:
+    image: signoz/signoz:latest
+    ports:
+      - "3301:3301"   # backend API port
+      - "3302:3302"   # UI port
+    environment:
+      - POD_NAMESPACE=default
+      - COLLECTION_TYPE=standalone
+    restart: unless-stopped
 
 volumes:
   pgdata:
