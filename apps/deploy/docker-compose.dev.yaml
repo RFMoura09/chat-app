@@ -34,16 +34,18 @@ services:
     volumes:
       - mongodata:/data/db
   
-  signoz:
-    image: signoz/signoz:latest
-    ports:
-      - "3301:3301"   # backend API port
-      - "3302:3302"   # UI port
-    environment:
-      - POD_NAMESPACE=default
-      - COLLECTION_TYPE=standalone
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
     restart: unless-stopped
+    environment:
+      ZO_ROOT_USER_EMAIL: "root@example.com"
+      ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+    ports:
+      - "5080:5080"
+    volumes:
+      - openobserve-data:/data
 
 volumes:
   pgdata:
   mongodata:
+  openobserve-data:
