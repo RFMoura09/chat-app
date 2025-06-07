@@ -1,4 +1,5 @@
-import './tracing'; // primeiro import
+import './observability';
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
