@@ -1,6 +1,8 @@
 version: '3.8'
 
 services:
+
+  #region DATABASES
   postgres:
     image: postgres:15
     restart: unless-stopped
@@ -8,12 +10,23 @@ services:
       POSTGRES_USER: devuser
       POSTGRES_PASSWORD: devpass
       POSTGRES_DB: chatdb
+      POSTGRES_LOG_STATEMENT: 'mod'  # Loga apenas INSERT/UPDATE/DELETE
+      # POSTGRES_LOG_MIN_DURATION_STATEMENT: 200ms  # Ignora operações rápidas
+      # POSTGRES_LOG_LINE_PREFIX: '%t [user=%u] '  # Inclui timestamp e usuário
+      # POSTGRES_LOG_ROTATION_SIZE: 10MB    # Rota logs a cada 10MB
+      # POSTGRES_LOG_ROTATION_AGE: 1d       # Apaga logs com mais de 1 dia
+      # POSTGRES_LOG_PARAMETER_MAX_LENGTH: 100  # Loga os 100 primeiros chars dos parâmetros
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      # - pglogs:/var/log/postgresql        # Logs separados
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    networks:
+      - postgres
   
-  migration:
+  postgres-migration:
     image: flyway/flyway:10.15-alpine
     volumes:
       - ./migrations:/flyway/sql
@@ -22,18 +35,25 @@ services:
       -url=jdbc:postgresql://postgres:5432/chatdb
       -user=devuser
       -password=devpass
+      -schemas=public,auth,groups,chat
       migrate
     depends_on:
       - postgres
+    networks:
+      - postgres
 
-  mongo:
-    image: mongo:6
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodata:/data/db
+  # mongo:
+  #   image: mongo:6
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodata:/data/db
+  #   networks:
+  #     - mongo
+  #endregion
   
+  #region OBSERVABILITY
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:latest
     restart: unless-stopped
@@ -44,6 +64,14 @@ services:
       - "5080:5080"
     volumes:
       - openobserve-data:/data
+    networks:
+      - observability
+  #endregion
+
+networks:
+  postgres:
+  mongo:
+  observability:
 
 volumes:
   pgdata:

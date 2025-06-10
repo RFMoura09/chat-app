@@ -9,3 +9,11 @@ api:
 
 deploy:
 	turbo run dev --filter=deploy
+
+db-report:
+	pgbadger /var/lib/postgresql/data/log/postgresql-*.log -o report.html
+
+clean:
+	rm -rf node_modules package-lock.json apps/api/node_modules apps/api/package-lock.json
+	npm cache clean --force
+	npm install --legacy-peer-deps

@@ -1,8 +1,6 @@
 create extension if not exists "uuid-ossp";
 
--- =======================
--- Schema Auth (Users)
--- =======================
+--#region SCHEMA auth
 create schema if not exists auth;
 
 create table if not exists auth.users (
@@ -17,10 +15,9 @@ create table if not exists auth.users (
 
 comment on table auth.users is 'Table containing application users data, including authentication information.';
 comment on column auth.users.deleted_at is 'Timestamp for soft deletion. NULL indicates an active user.';
+--#endregion
 
--- =======================
--- Schema Groups (Groups)
--- =======================
+--#region SCHEMA groups
 create schema if not exists groups;
 
 create table if not exists groups.groups (
@@ -40,10 +37,9 @@ create table if not exists groups.user_groups (
 );
 
 comment on table groups.user_groups is 'Table that links users to groups.';
+--#endregion
 
--- =======================
--- Schema Chat (Messages)
--- =======================
+--#region SCHEMA chat
 create schema if not exists chat;
 
 create table if not exists chat.private_messages (
@@ -69,3 +65,6 @@ create table if not exists chat.group_messages (
 );
 
 comment on table chat.group_messages is 'Messages sent within groups.';
+--#endregion
+
+insert into auth.users (name, email, password) values ('teste', 'teste@email.com', 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA');
